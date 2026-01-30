@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการรับสมัครงาน - สำหรับผู้ประกอบการ</title>
+    <link rel="stylesheet" href="entrepreneur-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal active" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="loginTitle">เข้าสู่ระบบผู้ประกอบการ</h2>
+            </div>
+            <div class="modal-body">
+                <div class="login-form">
+                    <div class="form-group">
+                        <label for="companySelect">เลือกบริษัท:</label>
+                        <select id="companySelect" class="form-control">
+                            <option value="">-- เลือกบริษัท --</option>
+                            <option value="company1">บริษัทเทคโนโลยี จำกัด (Premium Account)</option>
+                            <option value="company2">บริษัทใหม่ (Free Account - มีข้อจำกัด)</option>
+                        </select>
+                    </div>
+                    <button id="loginBtn" class="btn btn-primary btn-large">เข้าสู่ระบบ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar" role="navigation" aria-label="เมนูหลัก">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <h1>Recruitment<br><span>System</span></h1>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-page="dashboard" aria-current="page">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <span class="nav-label">แดชบอร์ด</span>
+                    <span class="premium-badge">Premium</span>
+                </button>
+                <button class="nav-item" data-page="jobs">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                    </svg>
+                    <span class="nav-label">จัดการประกาศงาน</span>
+                </button>
+                <button class="nav-item" data-page="applicants">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span class="nav-label">จัดการผู้สมัคร</span>
+                </button>
+                <button class="nav-item" data-page="search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                        <path d="M11 8v6"/>
+                        <path d="M8 11h6"/>
+                    </svg>
+                    <span class="nav-label">ค้นหาและกรองผู้สมัคร</span>
+                    <span class="premium-badge">Premium</span>
+                </button>
+                <button class="nav-item" data-page="settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/>
+                    </svg>
+                    <span class="nav-label">การตั้งค่า</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar"></div>
+                    <div class="user-name" id="sidebarCompanyName">บริษัท</div>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline">ออกจากระบบ</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" role="main">
+            <!-- Dashboard Page (Premium) -->
+            <section id="dashboardPage" class="page-content active">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">แดชบอร์ดภาพรวมการรับสมัคร</h2>
+                        <p class="page-subtitle">ข้อมูลสรุปและสถิติการรับสมัครงาน</p>
+                    </div>
+                    <button class="btn btn-premium">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Premium Feature
+                    </button>
+                </header>
+
+                <div id="dashboardContainer">
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--info);">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">ผู้สมัครทั้งหมด</div>
+                                <div class="stat-value" id="totalApplicants">0</div>
+                                <div class="stat-change positive">+12% จากเดือนที่แล้ว</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--success);">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">ผู้ผ่านการคัดเลือก</div>
+                                <div class="stat-value" id="selectedApplicants">0</div>
+                                <div class="stat-change positive">อัตราคัดเลือก 35%</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--warning);">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">เวลาเฉลี่ยในการสรรหา</div>
+                                <div class="stat-value" id="avgTime">0</div>
+                                <div class="stat-change neutral">วัน</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--jobs-primary);">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                                </svg>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">ตำแหน่งที่เปิดรับ</div>
+                                <div class="stat-value" id="openPositions">0</div>
+                                <div class="stat-change neutral">ตำแหน่ง</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3>แนวโน้มการสมัครงาน (รายเดือน)</h3>
+                            <div class="chart-placeholder">
+                                <canvas id="applicantsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <h3>ช่องทางที่ผู้สมัครมาจาก</h3>
+                            <div class="chart-placeholder">
+                                <canvas id="sourcesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Popular Positions -->
+                    <div class="chart-card" style="grid-column: 1 / -1;">
+                        <h3>ตำแหน่งยอดนิยม (จำนวนผู้สมัคร)</h3>
+                        <div id="popularPositions" class="popular-positions"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Job Management Page -->
+            <section id="jobsPage" class="page-content">
+                <header class="page-header">
+                    <h2 class="page-title">จัดการประกาศรับสมัครงาน</h2>
+                    <button id="createJobBtn" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        สร้างประกาศงานใหม่
+                    </button>
+                </header>
+
+                <div class="content-tabs">
+                    <button class="tab-btn active" data-status="active">กำลังเปิดรับ</button>
+                    <button class="tab-btn" data-status="closed">ปิดรับแล้ว</button>
+                    <button class="tab-btn" data-status="draft">แบบร่าง</button>
+                </div>
+
+                <div id="jobsContainer" class="jobs-management-grid"></div>
+            </section>
+
+            <!-- Applicants Management Page -->
+            <section id="applicantsPage" class="page-content">
+                <header class="page-header">
+                    <h2 class="page-title">ระบบจัดการใบสมัคร</h2>
+                    <div class="header-actions">
+                        <select class="form-control" id="jobFilter" style="width: 250px;">
+                            <option value="">ทุกตำแหน่ง</option>
+                        </select>
+                        <div class="search-container">
+                            <input type="search" class="search-input" placeholder="ค้นหาผู้สมัคร" aria-label="ค้นหาผู้สมัคร">
+                            <button class="search-btn" aria-label="ค้นหา">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <path d="m21 21-4.35-4.35"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="content-tabs">
+                    <button class="tab-btn active" data-applicant-status="all">ทั้งหมด</button>
+                    <button class="tab-btn" data-applicant-status="review">รอพิจารณา</button>
+                    <button class="tab-btn" data-applicant-status="interview">นัดสัมภาษณ์</button>
+                    <button class="tab-btn" data-applicant-status="selected">ผ่านการคัดเลือก</button>
+                    <button class="tab-btn" data-applicant-status="hired">รับเข้าทำงาน</button>
+                    <button class="tab-btn" data-applicant-status="rejected">ไม่ผ่าน</button>
+                </div>
+
+                <div id="applicantsContainer" class="applicants-list"></div>
+            </section>
+
+            <!-- Search & Filter Page (Premium) -->
+            <section id="searchPage" class="page-content">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">ค้นหาและกรองผู้สมัคร</h2>
+                        <p class="page-subtitle">กรองผู้สมัครตามความเหมาะสมจากทักษะ ประสบการณ์ และวุฒิการศึกษา</p>
+                    </div>
+                    <button class="btn btn-premium">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Premium Feature
+                    </button>
+                </header>
+
+                <div class="search-filters-panel">
+                    <div class="filter-group">
+                        <label>ตำแหน่งงาน:</label>
+                        <select class="form-control" id="searchJobFilter">
+                            <option value="">เลือกตำแหน่ง</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>ทักษะที่ต้องการ:</label>
+                        <input type="text" class="form-control" placeholder="เช่น Python, JavaScript, React">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>ประสบการณ์ (ปี):</label>
+                        <div class="filter-range">
+                            <input type="number" class="form-control" placeholder="ขั้นต่ำ" min="0">
+                            <span class="range-separator">ถึง</span>
+                            <input type="number" class="form-control" placeholder="สูงสุด" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>วุฒิการศึกษา:</label>
+                        <select class="form-control">
+                            <option value="">ทั้งหมด</option>
+                            <option value="bachelor">ปริญญาตรี</option>
+                            <option value="master">ปริญญาโท</option>
+                            <option value="phd">ปริญญาเอก</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        ค้นหาและจัดเรียง
+                    </button>
+                </div>
+
+                <div id="searchResults" class="search-results"></div>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="settingsPage" class="page-content">
+                <header class="page-header">
+                    <h2 class="page-title">การตั้งค่า</h2>
+                </header>
+                <div class="settings-container">
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f0f0f0"/>
+                            <circle cx="60" cy="60" r="30" fill="#ddd"/>
+                            <path d="M60 30v60M30 60h60" stroke="#999" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3>การตั้งค่า</h3>
+                        <p>ฟีเจอร์นี้กำลังพัฒนา</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Create/Edit Job Modal -->
+    <div id="jobModal" class="modal" role="dialog" aria-labelledby="jobModalTitle" aria-modal="true">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="jobModalTitle">สร้างประกาศงานใหม่</h2>
+                <button class="modal-close" aria-label="ปิด">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="jobForm" class="job-form">
+                    <div class="form-group">
+                        <label for="jobTitle">ตำแหน่งงาน: <span class="required">*</span></label>
+                        <input type="text" id="jobTitle" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jobDepartment">แผนก:</label>
+                            <input type="text" id="jobDepartment" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="jobType">ประเภทงาน:</label>
+                            <select id="jobType" class="form-control">
+                                <option value="full-time">Full-time</option>
+                                <option value="part-time">Part-time</option>
+                                <option value="contract">Contract</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jobSalaryMin">เงินเดือนขั้นต่ำ (บาท):</label>
+                            <input type="number" id="jobSalaryMin" class="form-control" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="jobSalaryMax">เงินเดือนสูงสุด (บาท):</label>
+                            <input type="number" id="jobSalaryMax" class="form-control" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jobDescription">รายละเอียดงาน: <span class="required">*</span></label>
+                        <textarea id="jobDescription" class="form-control" rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jobRequirements">คุณสมบัติผู้สมัคร:</label>
+                        <textarea id="jobRequirements" class="form-control" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jobContract">อัปโหลดสัญญาจ้าง (สำหรับ AI ตรวจสอบ): <span class="required">*</span></label>
+                        <div class="file-upload-area">
+                            <input type="file" id="jobContract" class="file-input" accept=".pdf,.doc,.docx">
+                            <div class="file-upload-label">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <p>คลิกเพื่ออัปโหลดสัญญาจ้าง</p>
+                                <small>รองรับ PDF, DOC, DOCX (ขนาดไม่เกิน 10MB)</small>
+                            </div>
+                            <div id="contractStatus" class="contract-status"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="app.ui.closeJobModal()">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" onclick="app.ui.saveDraft()">บันทึกแบบร่าง</button>
+                        <button type="submit" class="btn btn-primary">เผยแพร่ประกาศ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applicant Detail Modal -->
+    <div id="applicantModal" class="modal" role="dialog" aria-labelledby="applicantModalTitle" aria-modal="true">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="applicantModalTitle">รายละเอียดผู้สมัคร</h2>
+                <button class="modal-close" aria-label="ปิด">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="applicantDetailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="entrepreneur-script.js"></script>
+</body>
+</html>
